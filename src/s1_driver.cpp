@@ -18,6 +18,12 @@ S1Driver::S1Driver() : Node("s1_driver")
   this->declare_parameter<double>("cmd_vel_timeout", 1.0);
   this->declare_parameter<bool>("publish_tf", true);
   
+  // Declare velocity limit parameters
+  this->declare_parameter<double>("max_vel_fwd", 3.5);
+  this->declare_parameter<double>("max_vel_bwd", 2.5);
+  this->declare_parameter<double>("max_vel_lat", 2.8);
+  this->declare_parameter<double>("max_vel_ang", 3.0);
+  
   // Get parameters
   can_interface_ = this->get_parameter("can_interface").as_string();
   base_frame_ = this->get_parameter("base_frame").as_string();
@@ -25,6 +31,12 @@ S1Driver::S1Driver() : Node("s1_driver")
   control_frequency_ = this->get_parameter("control_frequency").as_double();
   cmd_vel_timeout_ = this->get_parameter("cmd_vel_timeout").as_double();
   publish_tf_ = this->get_parameter("publish_tf").as_bool();
+  
+  // Get velocity limit parameters
+  max_linear_velocity_fwd_ = this->get_parameter("max_vel_fwd").as_double();
+  max_linear_velocity_bwd_ = this->get_parameter("max_vel_bwd").as_double();
+  max_linear_velocity_lat_ = this->get_parameter("max_vel_lat").as_double();
+  max_angular_velocity_ = this->get_parameter("max_vel_ang").as_double();
   
   RCLCPP_INFO(this->get_logger(), "S1 Driver starting with CAN interface: %s", can_interface_.c_str());
   
@@ -90,13 +102,13 @@ void S1Driver::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
   // Extract velocities
   double vx = msg->linear.x;
   if (vx >= 0) {
-    vx = std::clamp(vx, 0.0, MAX_LINEAR_VELOCITY_FWD);
+    vx = std::clamp(vx, 0.0, max_linear_velocity_fwd_);
   } else {
-    vx = std::clamp(vx, -MAX_LINEAR_VELOCITY_BWD, 0.0);
+    vx = std::clamp(vx, -max_linear_velocity_bwd_, 0.0);
   }
   
-  double vy = std::clamp(msg->linear.y, -MAX_LINEAR_VELOCITY_LAT, MAX_LINEAR_VELOCITY_LAT);
-  double vz = std::clamp(msg->angular.z, -MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
+  double vy = std::clamp(msg->linear.y, -max_linear_velocity_lat_, max_linear_velocity_lat_);
+  double vz = std::clamp(msg->angular.z, -max_angular_velocity_, max_angular_velocity_);
   
   // Send movement command
   if (!sendMovementCommand(vx, vy, vz)) {
@@ -202,13 +214,13 @@ bool S1Driver::sendMovementCommand(double vx, double vy, double vz)
   // Normalize velocities to -1.0 to 1.0 range expected by robomaster-rust
   double norm_vx;
   if (vx >= 0) {
-    norm_vx = vx / MAX_LINEAR_VELOCITY_FWD;
+    norm_vx = vx / max_linear_velocity_fwd_;
   } else {
-    norm_vx = vx / MAX_LINEAR_VELOCITY_BWD;
+    norm_vx = vx / max_linear_velocity_bwd_;
   }
   
-  double norm_vy = vy / MAX_LINEAR_VELOCITY_LAT;
-  double norm_vz = vz / MAX_ANGULAR_VELOCITY;
+  double norm_vy = vy / max_linear_velocity_lat_;
+  double norm_vz = vz / max_angular_velocity_;
   
   if (!rust_bridge_->move(norm_vx, norm_vy, norm_vz)) {
     RCLCPP_WARN(this->get_logger(), "Failed to send movement command: %s",

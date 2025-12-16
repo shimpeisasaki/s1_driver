@@ -1,0 +1,14 @@
+s1_driver:
+  ros__parameters:
+    can_interface: "can0"
+    base_frame: "base_link"
+    odom_frame: "odom"
+    control_frequency: 50.0
+    cmd_vel_timeout: 1.0
+    publish_tf: true
+    
+    # Velocity limits (m/s, rad/s)
+    max_vel_fwd: 3.5
+    max_vel_bwd: 2.5
+    max_vel_lat: 2.8
+    max_vel_ang: 3.0
