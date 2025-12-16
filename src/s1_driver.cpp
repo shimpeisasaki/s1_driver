@@ -88,8 +88,14 @@ void S1Driver::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
   last_cmd_vel_time_ = this->now();
   
   // Extract velocities
-  double vx = std::clamp(msg->linear.x, -MAX_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
-  double vy = std::clamp(msg->linear.y, -MAX_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
+  double vx = msg->linear.x;
+  if (vx >= 0) {
+    vx = std::clamp(vx, 0.0, MAX_LINEAR_VELOCITY_FWD);
+  } else {
+    vx = std::clamp(vx, -MAX_LINEAR_VELOCITY_BWD, 0.0);
+  }
+  
+  double vy = std::clamp(msg->linear.y, -MAX_LINEAR_VELOCITY_LAT, MAX_LINEAR_VELOCITY_LAT);
   double vz = std::clamp(msg->angular.z, -MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
   
   // Send movement command
@@ -194,8 +200,14 @@ bool S1Driver::sendMovementCommand(double vx, double vy, double vz)
     "Sending movement command: vx=%.2f, vy=%.2f, vz=%.2f", vx, vy, vz);
   
   // Normalize velocities to -1.0 to 1.0 range expected by robomaster-rust
-  double norm_vx = vx / MAX_LINEAR_VELOCITY;
-  double norm_vy = vy / MAX_LINEAR_VELOCITY;
+  double norm_vx;
+  if (vx >= 0) {
+    norm_vx = vx / MAX_LINEAR_VELOCITY_FWD;
+  } else {
+    norm_vx = vx / MAX_LINEAR_VELOCITY_BWD;
+  }
+  
+  double norm_vy = vy / MAX_LINEAR_VELOCITY_LAT;
   double norm_vz = vz / MAX_ANGULAR_VELOCITY;
   
   if (!rust_bridge_->move(norm_vx, norm_vy, norm_vz)) {
