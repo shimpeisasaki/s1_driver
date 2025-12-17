@@ -112,8 +112,12 @@ private:
   static constexpr double WHEEL_RADIUS = 0.05;        // meters
   static constexpr double WHEEL_BASE_WIDTH = 0.2;     // meters  
   static constexpr double WHEEL_BASE_LENGTH = 0.2;    // meters
-  static constexpr double MAX_LINEAR_VELOCITY = 2.0;  // m/s
-  static constexpr double MAX_ANGULAR_VELOCITY = 3.0; // rad/s
+
+  // Velocity limits
+  double max_linear_velocity_fwd_;
+  double max_linear_velocity_bwd_;
+  double max_linear_velocity_lat_;
+  double max_angular_velocity_;
 };
 
 } // namespace s1_driver
