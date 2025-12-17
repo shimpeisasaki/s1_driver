@@ -45,6 +45,12 @@ add_executable(s1_driver_node
   src/rust_bridge.cpp
 )
 
+# Explicitly set include directories for the target to ensure local headers are used
+target_include_directories(s1_driver_node PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
 # Make sure Rust library is built first
 add_dependencies(s1_driver_node rust_lib_build)
 
