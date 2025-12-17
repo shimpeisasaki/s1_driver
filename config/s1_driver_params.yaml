@@ -1,6 +1,6 @@
 s1_driver:
   ros__parameters:
-    can_interface: "can0"
+    can_interface: "can2"
     base_frame: "base_link"
     odom_frame: "odom"
     control_frequency: 50.0
