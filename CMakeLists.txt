@@ -26,7 +26,7 @@ set(RUST_TARGET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/target")
 
 # Create custom command to build Rust library
 add_custom_command(
-    OUTPUT ${RUST_TARGET_DIR}/release/deps/lib${RUST_LIB_NAME}.a
+    OUTPUT ${RUST_TARGET_DIR}/release/lib${RUST_LIB_NAME}.a
     COMMAND cargo build --release --lib
     WORKING_DIRECTORY ${RUST_LIB_DIR}
     COMMENT "Building Rust library ${RUST_LIB_NAME}"
@@ -35,7 +35,7 @@ add_custom_command(
 
 # Create custom target for Rust library
 add_custom_target(rust_lib_build 
-    DEPENDS ${RUST_TARGET_DIR}/release/deps/lib${RUST_LIB_NAME}.a
+    DEPENDS ${RUST_TARGET_DIR}/release/lib${RUST_LIB_NAME}.a
 )
 
 # Create the s1_driver executable
@@ -56,7 +56,7 @@ add_dependencies(s1_driver_node rust_lib_build)
 
 # Link Rust library
 target_link_libraries(s1_driver_node
-  ${RUST_TARGET_DIR}/release/deps/lib${RUST_LIB_NAME}.a
+  ${RUST_TARGET_DIR}/release/lib${RUST_LIB_NAME}.a
   pthread
   dl
   m

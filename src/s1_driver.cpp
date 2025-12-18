@@ -41,7 +41,6 @@ S1Driver::S1Driver() : Node("s1_driver")
   RCLCPP_INFO(this->get_logger(), "S1 Driver starting with CAN interface: %s", can_interface_.c_str());
   
   // Initialize state
-  robot_state_ = {};
   robot_state_.timestamp = this->now();
   emergency_stop_ = false;
   can_initialized_ = false;
@@ -218,18 +217,9 @@ bool S1Driver::sendMovementCommand(double vx, double vy, double vz)
   RCLCPP_DEBUG(this->get_logger(), 
     "Sending movement command: vx=%.2f, vy=%.2f, vz=%.2f", vx, vy, vz);
   
-  // Normalize velocities to -1.0 to 1.0 range expected by robomaster-rust
-  double norm_vx;
-  if (vx >= 0) {
-    norm_vx = vx / max_linear_velocity_fwd_;
-  } else {
-    norm_vx = vx / max_linear_velocity_bwd_;
-  }
-  
-  double norm_vy = vy / max_linear_velocity_lat_;
-  double norm_vz = vz / max_angular_velocity_;
-  
-  if (!rust_bridge_->move(norm_vx, norm_vy, norm_vz)) {
+  // Pass raw velocities (m/s, rad/s) to robomaster-rust
+  // The Rust library handles the conversion to CAN values
+  if (!rust_bridge_->move(vx, vy, vz)) {
     RCLCPP_WARN(this->get_logger(), "Failed to send movement command: %s",
                 rust_bridge_->getLastError().c_str());
     return false;
