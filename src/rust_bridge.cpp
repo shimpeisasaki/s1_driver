@@ -45,6 +45,15 @@ bool RustBridge::move(double vx, double vy, double vz)
   return rust_bridge_send_movement(handle_id_, params) != 0;
 }
 
+bool RustBridge::sendBootSequence()
+{
+  if (!isValidHandle() || !is_initialized_) {
+    return false;
+  }
+
+  return rust_bridge_send_boot_sequence(handle_id_) != 0;
+}
+
 bool RustBridge::stop()
 {
   if (!isValidHandle() || !is_initialized_) {

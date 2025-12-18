@@ -178,11 +178,18 @@ bool S1Driver::initializeCAN()
   }
   
   if (!rust_bridge_->initialize()) {
-    RCLCPP_ERROR(this->get_logger(), "Failed to initialize Rust bridge: %s", 
+    RCLCPP_ERROR(this->get_logger(), "Failed to initialize robot connection: %s",
                  rust_bridge_->getLastError().c_str());
     return false;
   }
   
+  // Send boot sequence to initialize robot mode
+  if (!rust_bridge_->sendBootSequence()) {
+    RCLCPP_WARN(this->get_logger(), "Failed to send boot sequence. Robot may be in restricted mode.");
+  } else {
+    RCLCPP_INFO(this->get_logger(), "Boot sequence sent successfully.");
+  }
+
   can_initialized_ = true;
   RCLCPP_INFO(this->get_logger(), "CAN communication initialized successfully");
   return true;

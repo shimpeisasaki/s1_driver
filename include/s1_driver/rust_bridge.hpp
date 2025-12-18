@@ -49,6 +49,12 @@ public:
   bool move(double vx, double vy, double vz);
   
   /**
+   * @brief Send boot sequence to initialize robot mode
+   * @return true if command sent successfully, false otherwise
+   */
+  bool sendBootSequence();
+
+  /**
    * @brief Stop robot movement
    * @return true if stop command sent successfully, false otherwise
    */

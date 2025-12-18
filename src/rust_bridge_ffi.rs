@@ -386,6 +386,51 @@ pub extern "C" fn rust_bridge_stop(handle_id: i32) -> c_bool {
 }
 
 #[no_mangle]
+pub extern "C" fn rust_bridge_send_boot_sequence(handle_id: i32) -> c_bool {
+    let handles = match HANDLES.lock() {
+        Ok(h) => h,
+        Err(_) => {
+            eprintln!("Failed to lock handles mutex");
+            return 0;
+        }
+    };
+
+    let handle = match handles.get(handle_id as usize) {
+        Some(Some(h)) => h.clone(),
+        _ => {
+            eprintln!("Invalid handle ID: {}", handle_id);
+            return 0;
+        }
+    };
+
+    let mut bridge = match handle.lock() {
+        Ok(b) => b,
+        Err(_) => {
+            eprintln!("Failed to lock bridge handle");
+            return 0;
+        }
+    };
+
+    if let Some(robot_arc) = bridge.robot.clone() {
+        let result = bridge.runtime.block_on(async move {
+            let mut robot = robot_arc.lock().unwrap();
+            robot.send_boot_sequence().await
+        });
+
+        match result {
+            Ok(_) => 1,
+            Err(e) => {
+                eprintln!("Failed to send boot sequence: {}", e);
+                0
+            }
+        }
+    } else {
+        eprintln!("Robot not initialized");
+        0
+    }
+}
+
+#[no_mangle]
 pub extern "C" fn rust_bridge_get_last_error(_handle_id: i32) -> *const c_char {
     // For now, return a static error message
     // In a real implementation, you'd store per-handle error messages

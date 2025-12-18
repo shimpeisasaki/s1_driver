@@ -88,6 +88,7 @@ void rust_bridge_destroy(int32_t handle_id);
 // Movement commands
 c_bool rust_bridge_send_movement(int32_t handle_id, MovementParams params);
 c_bool rust_bridge_stop(int32_t handle_id);
+c_bool rust_bridge_send_boot_sequence(int32_t handle_id);
 
 // LED control
 c_bool rust_bridge_send_led_color(int32_t handle_id, LedColor color);
