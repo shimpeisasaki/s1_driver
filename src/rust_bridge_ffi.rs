@@ -53,7 +53,7 @@ impl From<LedColor> for RustLedColor {
 
 /// ESC (wheel motor) data for FFI
 #[repr(C)]
-pub struct EscDataFFI {
+pub struct EscData {
     /// Wheel speeds in rad/s [front-left, front-right, rear-left, rear-right]
     pub speeds: [c_float; 4],
     /// Wheel angles in radians
@@ -64,7 +64,7 @@ pub struct EscDataFFI {
 
 /// IMU data for FFI
 #[repr(C)]
-pub struct ImuDataFFI {
+pub struct ImuData {
     /// Acceleration in m/s² [x, y, z]
     pub accel: [c_float; 3],
     /// Angular velocity in rad/s [x, y, z]
@@ -75,7 +75,7 @@ pub struct ImuDataFFI {
 
 /// Velocity data for FFI
 #[repr(C)]
-pub struct VelocityDataFFI {
+pub struct VelocityData {
     /// Body frame velocity [vx, vy, vz] in m/s
     pub body: [c_float; 3],
     /// Data valid flag
@@ -84,7 +84,7 @@ pub struct VelocityDataFFI {
 
 /// Position data for FFI
 #[repr(C)]
-pub struct PositionDataFFI {
+pub struct PositionData {
     /// Position [x, y, z] in meters
     pub x: c_float,
     pub y: c_float,
@@ -95,7 +95,7 @@ pub struct PositionDataFFI {
 
 /// Attitude data for FFI
 #[repr(C)]
-pub struct AttitudeDataFFI {
+pub struct AttitudeData {
     /// Yaw angle in radians
     pub yaw: c_float,
     /// Pitch angle in radians
@@ -509,7 +509,7 @@ pub extern "C" fn rust_bridge_read_sensor_data(handle_id: i32) -> c_bool {
 
 /// Get ESC (wheel motor) data
 #[no_mangle]
-pub extern "C" fn rust_bridge_get_esc_data(handle_id: i32, data: *mut EscDataFFI) -> c_bool {
+pub extern "C" fn rust_bridge_get_esc_data(handle_id: i32, data: *mut EscData) -> c_bool {
     if data.is_null() {
         return 0;
     }
@@ -550,7 +550,7 @@ pub extern "C" fn rust_bridge_get_esc_data(handle_id: i32, data: *mut EscDataFFI
 
 /// Get IMU data
 #[no_mangle]
-pub extern "C" fn rust_bridge_get_imu_data_new(handle_id: i32, data: *mut ImuDataFFI) -> c_bool {
+pub extern "C" fn rust_bridge_get_imu_data_new(handle_id: i32, data: *mut ImuData) -> c_bool {
     if data.is_null() {
         return 0;
     }
@@ -586,7 +586,7 @@ pub extern "C" fn rust_bridge_get_imu_data_new(handle_id: i32, data: *mut ImuDat
 
 /// Get velocity data
 #[no_mangle]
-pub extern "C" fn rust_bridge_get_velocity_data(handle_id: i32, data: *mut VelocityDataFFI) -> c_bool {
+pub extern "C" fn rust_bridge_get_velocity_data(handle_id: i32, data: *mut VelocityData) -> c_bool {
     if data.is_null() {
         return 0;
     }
@@ -621,7 +621,7 @@ pub extern "C" fn rust_bridge_get_velocity_data(handle_id: i32, data: *mut Veloc
 
 /// Get position data
 #[no_mangle]
-pub extern "C" fn rust_bridge_get_position_data(handle_id: i32, data: *mut PositionDataFFI) -> c_bool {
+pub extern "C" fn rust_bridge_get_position_data(handle_id: i32, data: *mut PositionData) -> c_bool {
     if data.is_null() {
         return 0;
     }
@@ -658,7 +658,7 @@ pub extern "C" fn rust_bridge_get_position_data(handle_id: i32, data: *mut Posit
 
 /// Get attitude data
 #[no_mangle]
-pub extern "C" fn rust_bridge_get_attitude_data(handle_id: i32, data: *mut AttitudeDataFFI) -> c_bool {
+pub extern "C" fn rust_bridge_get_attitude_data(handle_id: i32, data: *mut AttitudeData) -> c_bool {
     if data.is_null() {
         return 0;
     }
@@ -753,5 +753,11 @@ pub extern "C" fn rust_bridge_get_imu_data(
             return if imu.has_data { 1 } else { 0 };
         }
     }
+    0
+}
+
+/// Legacy sensor data getter to ensure SensorData struct is generated in header
+#[no_mangle]
+pub extern "C" fn rust_bridge_get_sensor_data_legacy(_handle_id: i32, _data: *mut SensorData) -> c_bool {
     0
 }
