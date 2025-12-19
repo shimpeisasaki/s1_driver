@@ -212,6 +212,7 @@ bool S1Driver::sendMovementCommand(double vx, double vy, double vz)
     "Sending movement command: vx=%.2f, vy=%.2f, vz=%.2f", vx, vy, vz);
   
   // Normalize velocities to -1.0 to 1.0 range expected by robomaster-rust
+  /*
   double norm_vx;
   if (vx >= 0) {
     norm_vx = vx / max_linear_velocity_fwd_;
@@ -221,8 +222,9 @@ bool S1Driver::sendMovementCommand(double vx, double vy, double vz)
   
   double norm_vy = vy / max_linear_velocity_lat_;
   double norm_vz = vz / max_angular_velocity_;
+  */
   
-  if (!rust_bridge_->move(norm_vx, norm_vy, norm_vz)) {
+  if (!rust_bridge_->move(vx, vy, vz)) {
     RCLCPP_WARN(this->get_logger(), "Failed to send movement command: %s",
                 rust_bridge_->getLastError().c_str());
     return false;
