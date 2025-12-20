@@ -38,6 +38,14 @@ public:
    * @return true if initialization successful, false otherwise
    */
   bool initialize();
+
+  /**
+   * @brief Set movement gains
+   * @param x Gain for X axis
+   * @param y Gain for Y axis
+   * @param z Gain for Z axis
+   */
+  void setGains(double x, double y, double z);
   
   /**
    * @brief Send movement command to robot

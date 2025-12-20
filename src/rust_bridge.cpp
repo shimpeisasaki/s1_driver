@@ -31,6 +31,14 @@ bool RustBridge::initialize()
   return is_initialized_;
 }
 
+void RustBridge::setGains(double x, double y, double z)
+{
+  if (!isValidHandle()) {
+    return;
+  }
+  rust_bridge_set_gains(handle_id_, static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
+}
+
 bool RustBridge::move(double vx, double vy, double vz)
 {
   if (!isValidHandle() || !is_initialized_) {

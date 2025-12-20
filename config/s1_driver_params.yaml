@@ -12,3 +12,8 @@ s1_driver:
     max_vel_bwd: 2.5
     max_vel_lat: 2.8
     max_vel_ang: 3.0
+
+    # Control gains
+    gain_x: 300.0
+    gain_y: 256.0
+    gain_z: 256.0

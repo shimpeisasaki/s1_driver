@@ -145,16 +145,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
 
 [[package]]
-name = "can-socket"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "774a6ec8a501df38b9ee1ac612b43cace8a782e0c9417c3e325a94a65ef65969"
-dependencies = [
- "filedesc",
- "libc",
-]
-
-[[package]]
 name = "cbindgen"
 version = "0.24.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -307,15 +297,6 @@ name = "fastrand"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
-
-[[package]]
-name = "filedesc"
-version = "0.6.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c4960c866d9cf4c48f64f11ef0020c98900d0cb32e9b019c000ed838470daa1d"
-dependencies = [
- "libc",
-]
 
 [[package]]
 name = "fnv"
@@ -902,7 +883,6 @@ dependencies = [
  "anyhow",
  "bitflags 2.9.1",
  "byteorder",
- "can-socket",
  "clap 4.5.40",
  "futures",
  "gilrs",

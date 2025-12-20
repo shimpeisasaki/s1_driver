@@ -23,6 +23,11 @@ S1Driver::S1Driver() : Node("s1_driver")
   this->declare_parameter<double>("max_vel_bwd", 2.5);
   this->declare_parameter<double>("max_vel_lat", 2.8);
   this->declare_parameter<double>("max_vel_ang", 3.0);
+
+  // Declare gain parameters
+  this->declare_parameter<double>("gain_x", 300.0);
+  this->declare_parameter<double>("gain_y", 256.0);
+  this->declare_parameter<double>("gain_z", 256.0);
   
   // Get parameters
   can_interface_ = this->get_parameter("can_interface").as_string();
@@ -37,6 +42,11 @@ S1Driver::S1Driver() : Node("s1_driver")
   max_linear_velocity_bwd_ = this->get_parameter("max_vel_bwd").as_double();
   max_linear_velocity_lat_ = this->get_parameter("max_vel_lat").as_double();
   max_angular_velocity_ = this->get_parameter("max_vel_ang").as_double();
+
+  // Get gain parameters
+  double gain_x = this->get_parameter("gain_x").as_double();
+  double gain_y = this->get_parameter("gain_y").as_double();
+  double gain_z = this->get_parameter("gain_z").as_double();
   
   RCLCPP_INFO(this->get_logger(), "S1 Driver starting with CAN interface: %s", can_interface_.c_str());
   
@@ -49,6 +59,7 @@ S1Driver::S1Driver() : Node("s1_driver")
   
   // Initialize Rust bridge
   rust_bridge_ = std::make_unique<RustBridge>(can_interface_);
+  rust_bridge_->setGains(gain_x, gain_y, gain_z);
   
   // Create publishers
   odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);

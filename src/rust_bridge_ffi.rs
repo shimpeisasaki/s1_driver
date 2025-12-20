@@ -247,6 +247,40 @@ pub extern "C" fn rust_bridge_initialize(handle_id: i32, interface: *const c_cha
 }
 
 #[no_mangle]
+pub extern "C" fn rust_bridge_set_gains(handle_id: i32, x: c_float, y: c_float, z: c_float) {
+    let handles = match HANDLES.lock() {
+        Ok(h) => h,
+        Err(_) => {
+            eprintln!("Failed to lock handles mutex");
+            return;
+        }
+    };
+
+    let handle = match handles.get(handle_id as usize) {
+        Some(Some(h)) => h.clone(),
+        _ => {
+            eprintln!("Invalid handle ID: {}", handle_id);
+            return;
+        }
+    };
+
+    let bridge = match handle.lock() {
+        Ok(b) => b,
+        Err(_) => {
+            eprintln!("Failed to lock bridge handle");
+            return;
+        }
+    };
+
+    if let Some(robot_arc) = bridge.robot.clone() {
+        let mut robot = robot_arc.lock().unwrap();
+        robot.set_gains(x as f32, y as f32, z as f32);
+    } else {
+        eprintln!("Robot not initialized");
+    }
+}
+
+#[no_mangle]
 pub extern "C" fn rust_bridge_send_movement(handle_id: i32, params: MovementParams) -> c_bool {
     let handles = match HANDLES.lock() {
         Ok(h) => h,
